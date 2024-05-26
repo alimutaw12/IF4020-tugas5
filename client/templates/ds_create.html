@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
+        <div class="btn-group" role="group">
+            <a class="btn btn-default" href="/ds">Back</a>
+        </div>
+    </div>
+
+    <form action="/ds/store" method="post">
+        <div class="form-group">
+            <label for="port">Receiver Port</label>
+            <input type="text" class="form-control" id="port" name="port">
+        </div>
+
+        <div class="form-group">
+            <label for="title">Title</label>
+            <textarea class="form-control" id="title" name="title" rows="1"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea class="form-control" id="message" name="message" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="is_signature">Digital Signature</label>
+            <select name="is_signature" class="form-control" id="is_signature">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            // sending a connect request to the server.
+            var socket = io.connect('http://127.0.0.1:3000');
+
+            // sending a connect request to the server.
+            var socket2 = io.connect('http://127.0.0.1:' + location.port);
+
+            socket.on('after connect', function(msg) {
+                console.log('After connect', msg);
+                socket2.emit('generate_ds_key', {
+                    'a': msg.ds_a,
+                    'p': msg.ds_p,
+                    'q': msg.ds_q
+                });
+            });
+        });
+</script>
+{% endblock %}

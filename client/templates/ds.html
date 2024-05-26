@@ -1,7 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>DS</p>
+    <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
+        <div class="btn-group" role="group">
+            <a class="btn btn-default" href="/ds/create">Add</a>
+        </div>
+    </div>
+
+    {% for document in documents %}
+        <div class="list-group">
+            <div class="list-group-item">
+            <a href="/ds/read/{{ document[0] }}">
+                <h4 class="list-group-item-heading">{{ document[3] }} 
+                    {% if document[5] == 1 %}
+                    <span class="label label-default">signed</span>
+                    {% endif %}
+                </h4>
+            </a>
+            <p class="list-group-item-text">From {{ document[1] }}</p>
+            </div>
+        </div>
+    {% endfor %}
 {% endblock %}
 
 {% block scripts %}
