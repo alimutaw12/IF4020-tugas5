@@ -59,6 +59,11 @@ def split_encrypted_message_string(encrypted_string):
 def point_to_string(point):
     return f"({point[0]},{point[1]})"
 
+def generate_e2ee_key():
+    private_key = random.randint(1, p-1)
+    public_key = scalar_mult(private_key, G)
+    return {"private_key": private_key, "public_key": public_key}
+
 # Generate kunci privat dan publik
 # private_key_A = random.randint(1, p-1)
 # private_key_A = 6142377013754190839186311013910539581696466620887266069510
