@@ -2,7 +2,7 @@
 
 {% block content %}
     <p>Private Key : {{ key['private_key'] }}</p>
-    <p>Public Key : ({{ key['public_key'][0] }}, {{ key['public_key'][1] }})</p>
+    <p>Public Key : {{ key['public_key'][0] }}, {{ key['public_key'][1] }}</p>
     <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
         <div class="btn-group" role="group">
             <a class="btn btn-default" href="/e2ee/create">Add</a>
