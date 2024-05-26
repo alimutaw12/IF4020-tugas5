@@ -3,6 +3,9 @@ from flask_socketio import SocketIO, emit
 from cipher.operations import *
 from cipher.helper import *
 from cipher.cipher import *
+from cipher.ds import *
+import os
+import json
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -12,7 +15,26 @@ shared_key = {}
 # Handler for a message recieved over 'connect' channel
 @socketio.on('connect')
 def test_connect():
-    emit('after connect',  {'data':'Lets dance 22'})
+    filename = 'dsglobalkey.txt'
+
+    fileexist = os.path.isfile(filename)
+    if not fileexist:
+        key = generate_global_keys()
+        key_string = json.dumps(key)
+        file = open(f'{filename}', 'wb')
+        file.write(charToBytes(key_string))
+        
+    file = open(f'{filename}', 'rb')
+    key = file.read()
+    global_keys = json.loads(bytesToChar(key))
+    print(global_keys)
+
+    emit('after connect',  {
+        'data':'Lets dance 22',
+        'ds_a': global_keys['a'],
+        'ds_p': global_keys['p'],
+        'ds_q': global_keys['q']
+    })
 
 @socketio.on('hello')
 def test_hello():

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p>DS</p>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            // sending a connect request to the server.
+            var socket = io.connect('http://127.0.0.1:3000');
+
+            // sending a connect request to the server.
+            var socket2 = io.connect('http://127.0.0.1:' + location.port);
+
+            socket.on('after connect', function(msg) {
+                console.log('After connect', msg);
+                socket2.emit('generate_ds_key', {
+                    'a': msg.ds_a,
+                    'p': msg.ds_p,
+                    'q': msg.ds_q
+                });
+            });
+        });
+</script>
+{% endblock %}

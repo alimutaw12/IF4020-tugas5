@@ -4,11 +4,16 @@ from cipher.cipher import *
 from cipher.operations import *
 from cipher.helper import *
 from routes.e2ee_bp import e2ee_bp
+from routes.ds_bp import ds_bp
+import os
+import json
+from cipher.ds import *
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 app.register_blueprint(e2ee_bp, url_prefix='/e2ee')
+app.register_blueprint(ds_bp, url_prefix='/ds')
 
 shared_key = {
     'shared_key0': 0,
@@ -28,6 +33,35 @@ def test_connect():
 @socketio.on('broadcast')
 def test_broadcast():
     emit('after broadcast',  {'data':'Lets broadcast dance'})
+
+@socketio.on('generate_ds_key')
+def generate_ds_key(message):
+    filename = 'dsglobalkey.txt'
+
+    fileexist = os.path.isfile(filename)
+    if not fileexist:
+        key = message
+        key_string = json.dumps(key)
+        file = open(f'{filename}', 'wb')
+        file.write(charToBytes(key_string))
+        
+    file = open(f'{filename}', 'rb')
+    key = file.read()
+    global_keys = json.loads(bytesToChar(key))
+
+    port = request.host.split(':')[1] if ':' in request.host else '80'
+    filename = 'dskey'+ port +'.txt'
+
+    fileexist = os.path.isfile(filename)
+    if not fileexist:
+        key = generate_ds_keys(global_keys['a'], global_keys['p'], global_keys['q'])
+        key_string = json.dumps(key)
+        file = open(f'{filename}', 'wb')
+        file.write(charToBytes(key_string))
+        
+    file = open(f'{filename}', 'rb')
+    key = file.read()
+    ds_key = json.loads(bytesToChar(key))
 
 @socketio.on('Slider value changed')
 def value_changed(message):
