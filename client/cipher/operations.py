@@ -29,6 +29,9 @@ def scalar_mult(k, P):
     N = P
     Q = (None, None)
     while k:
+        if issubclass(type(k), str):
+            k = int(k)
+        
         if k & 1:
             Q = ec_add(Q, N)
         N = ec_add(N, N)

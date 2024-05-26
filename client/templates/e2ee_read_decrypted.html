@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
+        <div class="btn-group" role="group">
+            <a class="btn btn-default" href="/e2ee">Back</a>
+        </div>
+    </div>
+
+    <h4>{{ chat[3] }}</h4>
+
+    <div class="list-group">
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Message</h4>
+        <p class="list-group-item-text">{{ decrypted_message }}</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

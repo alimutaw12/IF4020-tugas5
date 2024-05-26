@@ -9,20 +9,14 @@
         </div>
     </div>
 
-    <div class="list-group">
-        <div class="list-group-item">
-          <h4 class="list-group-item-heading">Title</h4>
-          <p class="list-group-item-text">Body</p>
+    {% for chat in chats %}
+        <div class="list-group">
+            <div class="list-group-item">
+            <a href="/e2ee/read/{{ chat[0] }}"><h4 class="list-group-item-heading">{{ chat[3] }}</h4></a>
+            <p class="list-group-item-text">From {{ chat[1] }}</p>
+            </div>
         </div>
-    </div>
-
-    <div class="list-group">
-        <div class="list-group-item">
-          <h4 class="list-group-item-heading">Title</h4>
-          <p class="list-group-item-text">Body</p>
-        </div>
-    </div>
-    <p>E2EE</p>
+    {% endfor %}
 {% endblock %}
 
 {% block scripts %}

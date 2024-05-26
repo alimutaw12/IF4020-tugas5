@@ -23,12 +23,24 @@ def index():
     key_json = json.loads(bytesToChar(key))
     # print(key_json)
 
-    return render_template('e2ee.html', key=key_json)
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="crypto"
+    )
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM chats WHERE port ='"+port+"'"
+    mycursor.execute(sql)
+    chats = mycursor.fetchall()
+
+    return render_template('e2ee.html', key=key_json, chats=chats)
 
 def create():
     return render_template('e2ee_create.html')
 
 def store():
+    sender = request.host.split(':')[1] if ':' in request.host else '80'
     port = request.form.get('port')
     title = request.form.get('title')
     message = request.form.get('message')
@@ -48,10 +60,58 @@ def store():
 
     mycursor = mydb.cursor()
 
-    sql = "INSERT INTO chats (port, title, message) VALUES (%s, %s, %s)"
-    val = (port, title, encrypted_string)
+    sql = "INSERT INTO chats (sender, port, title, message) VALUES (%s, %s, %s, %s)"
+    val = (sender, port, title, encrypted_string)
     mycursor.execute(sql, val)
 
     mydb.commit()
 
     return redirect('/e2ee')
+
+def read(chat_id):
+    port = request.host.split(':')[1] if ':' in request.host else '80'
+    filename = 'e2eekey-' + port + '.txt'
+    fileexist = os.path.isfile(filename)
+    if not fileexist:
+        key = generate_e2ee_key()
+        # print(key)
+        key_string = json.dumps(key)
+        # print(key_string)
+        file = open(f'{filename}', 'wb')
+        file.write(charToBytes(key_string))
+        
+    file = open(f'{filename}', 'rb')
+    key = file.read()
+    key_json = json.loads(bytesToChar(key))
+
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="crypto"
+    )
+
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM chats WHERE id ='"+str(chat_id)+"'"
+    mycursor.execute(sql)
+    chat = mycursor.fetchone()
+    
+    return render_template('e2ee_read.html', key=key_json, chat=chat)
+
+def readDecrypted(chat_id):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="crypto"
+    )
+
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM chats WHERE id ='"+str(chat_id)+"'"
+    mycursor.execute(sql)
+    chat = mycursor.fetchone()
+
+    private_key = request.form.get('private_key')
+    decrypted_message = decrypt_message(private_key, chat[4])
+
+    return render_template('e2ee_read_decrypted.html', chat=chat, decrypted_message=decrypted_message)

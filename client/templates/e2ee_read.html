@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
+        <div class="btn-group" role="group">
+            <a class="btn btn-default" href="/e2ee">Back</a>
+        </div>
+    </div>
+
+    <p>Private Key : {{ key['private_key'] }}</p>
+    <h4>{{ chat[3] }}</h4>
+
+    <div class="list-group">
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Message</h4>
+        <p class="list-group-item-text">"Encrypted"</p>
+        </div>
+    </div>
+
+    <form action="/e2ee/read-decrypted/{{ chat[0] }}" method="post">
+
+        <div class="form-group">
+            <label for="private_key">Private Key</label>
+            <textarea class="form-control" id="private_key" name="private_key" rows="1">{{ key['private_key'] }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Read</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
