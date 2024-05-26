@@ -3,9 +3,12 @@ from flask_socketio import SocketIO, emit
 from cipher.cipher import *
 from cipher.operations import *
 from cipher.helper import *
+from routes.e2ee_bp import e2ee_bp
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
+
+app.register_blueprint(e2ee_bp, url_prefix='/e2ee')
 
 shared_key = {
     'shared_key0': 0,
