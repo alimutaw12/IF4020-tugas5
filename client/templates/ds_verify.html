@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
+        <div class="btn-group" role="group">
+            <a class="btn btn-default" href="/ds">Back</a>
+        </div>
+    </div>
+
+    <h4>
+        {{ document[3] }}
+        {% if document[5] == 1 %}
+            <span class="label label-default">signed</span>
+        {% endif %}
+    </h4>
+
+    <div class="list-group">
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Message</h4>
+        <p class="list-group-item-text">{{ document[4] }}</p>
+        </div>
+    </div>
+
+    {% if is_valid %}
+        <span class="label label-default">Valid</span>
+    {% else %}
+        <span class="label label-default">Not Valid</span>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

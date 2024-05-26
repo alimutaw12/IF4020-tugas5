@@ -77,3 +77,52 @@ def store():
     mydb.commit()
 
     return redirect('/ds')
+
+def read(document_id):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="crypto"
+    )
+
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM documents WHERE id ='"+str(document_id)+"'"
+    mycursor.execute(sql)
+    document = mycursor.fetchone()
+    
+    return render_template('ds_read.html', document=document)
+
+def verify(document_id):
+    filename = 'dsglobalkey.txt'
+
+    fileexist = os.path.isfile(filename)
+    if not fileexist:
+        return redirect('/ds')
+        
+    file = open(f'{filename}', 'rb')
+    key = file.read()
+    global_keys = json.loads(bytesToChar(key))
+
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="password",
+        database="crypto"
+    )
+
+    mycursor = mydb.cursor()
+    sql = "SELECT * FROM documents WHERE id ='"+str(document_id)+"'"
+    mycursor.execute(sql)
+    document = mycursor.fetchone()
+
+    signature = (int(document[6]), int(document[7]))
+    v = int(request.form.get('verify_key'))
+    message2 = document[4]
+    a = global_keys['a']
+    p = global_keys['p']
+    q = global_keys['q']
+
+    is_valid = verify_signature(v, message2, signature, a, p, q)
+    
+    return render_template('ds_verify.html', document=document, is_valid=is_valid)

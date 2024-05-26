@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="btn-group btn-group-end" style="margin-bottom: 20px;" role="group">
+        <div class="btn-group" role="group">
+            <a class="btn btn-default" href="/ds">Back</a>
+        </div>
+    </div>
+
+    <h4>
+        {{ document[3] }}
+        {% if document[5] == 1 %}
+            <span class="label label-default">signed</span>
+        {% endif %}
+    </h4>
+
+    <div class="list-group">
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Message</h4>
+        <p class="list-group-item-text">{{ document[4] }}</p>
+        </div>
+    </div>
+
+    {% if document[5] == 1 %}
+    <form action="/ds/verify/{{ document[0] }}" method="post">
+
+        <div class="form-group">
+            <label for="verify_key">Verify Key</label>
+            <textarea class="form-control" id="verify_key" name="verify_key" rows="1"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Read</button>
+    </form>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

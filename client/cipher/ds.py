@@ -13,3 +13,9 @@ def sign_message(s, message, a, p ,q):
     e = int(hashlib.sha256(message.encode() + str(x).encode()).hexdigest(), 16) % q
     y = (r + s * e) % q
     return e, y
+
+def verify_signature(v, message, signature, a, p, q):
+    e, y = signature
+    x_a = (pow(a, y, p) * pow(v, q - e, p)) % p
+    e_a = int(hashlib.sha256(message.encode() + str(x_a).encode()).hexdigest(), 16) % q
+    return e == e_a
