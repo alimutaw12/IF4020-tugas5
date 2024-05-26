@@ -24,6 +24,10 @@ shared_key = {
 def main():
     return render_template('index.html')
 
+@app.route("/als")
+def als():
+    return render_template('als.html')
+
 # Handler for a message recieved over 'connect' channel
 @socketio.on('connect')
 def test_connect():

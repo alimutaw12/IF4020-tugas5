@@ -1,76 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>test2</p>
-
-    <button class="btn btn-success" id="btn">BUTTON</button>
-    <button class="btn btn-success" id="handshake">HANDSHAKE</button>
+    <h4>Welcome</h4>
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            // sending a connect request to the server.
-            var socket = io.connect('http://127.0.0.1:3000');
-
-            // sending a connect request to the server.
-            var socket2 = io.connect('http://127.0.0.1:5000');
-            
-            socket2.on('after connect', function(msg) {
-                console.log('After connect', msg);
-            });
-
-            socket2.on('after broadcast', function(msg) {
-                console.log('After broadcast', msg);
-            });
-        
-            socket.on('after connect', function(msg) {
-                console.log('After connect', msg);
-                socket2.emit('broadcast');
-            });
-
-            $("#handshake").click(function(){
-                socket.emit('hello');
-            });
-
-            socket.on('after hello', function(msg) {
-                socket2.emit('Slider value changed', {
-                   who: msg.G0,
-                   data: msg.G1
-                });
-                console.log('After hello', msg.G0);
-            });
-
-            socket.on('send_shared_key', function(msg) {
-                socket2.emit('store_shared_key', {
-                    shared_key0: msg.shared_key0,
-                    shared_key1: msg.shared_key1
-                });
-                console.log('After send_shared_key', msg);
-            });
-
-            socket2.on('receive_public_key', function(msg) {
-                socket.emit('send_public_key', {
-                   pk0: msg.pk0,
-                   pk1: msg.pk1,
-                   port: location.port
-                });
-                console.log('receive_public_key ', msg);
-            });
-
-            socket2.on('send_cipher_text', function(msg) {
-                console.log('send_cipher_text ', msg);
-                socket.emit('get_cipher_text', {
-                    ciphertext: msg.ciphertext,
-                    port: location.port
-                });
-            });
-
-            $("#btn").click(function(){
-                socket2.emit('encrypt_message', {
-                   data: 'message coba ah'
-               });
-            });
-        });
-     </script>
 {% endblock %}
