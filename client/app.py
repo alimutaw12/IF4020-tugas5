@@ -7,6 +7,7 @@ from routes.e2ee_bp import e2ee_bp
 from routes.ds_bp import ds_bp
 import os
 import json
+import random
 from cipher.ds import *
 
 app = Flask(__name__)
@@ -32,11 +33,6 @@ def als():
 @socketio.on('connect')
 def test_connect():
     emit('after connect',  {'data':'Lets dance'})
-
-# Handler for a message recieved over 'connect' channel
-@socketio.on('broadcast')
-def test_broadcast():
-    emit('after broadcast',  {'data':'Lets broadcast dance'})
 
 @socketio.on('generate_ds_key')
 def generate_ds_key(message):
@@ -67,71 +63,40 @@ def generate_ds_key(message):
     key = file.read()
     ds_key = json.loads(bytesToChar(key))
 
-@socketio.on('Slider value changed')
-def value_changed(message):
-    G0 = int(message['who'])
-    G1 = int(message['data'])
+@socketio.on('generate_als_public_key')
+def generate_als_public_key(message):
+    G0 = int(message['g0'])
+    G1 = int(message['g1'])
+    p = int(message['p'])
     G = (G0, G1)
-    private_key = 2019060391321228997043397874657983950447183796962467745184
+    private_key = random.randint(1, p-1)
     public_key = scalar_mult(private_key, G)
     emit('receive_public_key',  {'pk0': str(public_key[0]), 'pk1': str(public_key[1])})
-    print(public_key)
-    print(int(message['who']))
-    print(int(message['data']))
 
 @socketio.on('store_shared_key')
 def store_shared_key(message):
-    # print(message)
     shared_key['shared_key0'] = int(message['shared_key0'])
     shared_key['shared_key1'] = int(message['shared_key1'])
+    emit('success_store_shared_key')
 
-@socketio.on('encrypt_message')
-def encrypt_message(message):
-    # shared_key = (shared_key0, shared_key1)
+@socketio.on('als_encrypt_message')
+def als_encrypt_message(message):
     sum_shared_key = shared_key['shared_key0'] + shared_key['shared_key1']
     sum_shared_key = str(sum_shared_key)
     chunks = len(sum_shared_key)
     chunks, chunk_size = len(sum_shared_key), 16
     sum_shared_key = [sum_shared_key[i:i+chunk_size] for i in range(0, chunks, chunk_size)]
-    print(sum_shared_key)
     shared = 0
     for i in range(len(sum_shared_key)):
         shared += int(sum_shared_key[i])
-    print("Kunci bersama +: ", (shared_key['shared_key0'] + shared_key['shared_key1']))
-    print("shared : ", shared)
     shared = str(shared)
     shared = [shared[i:i+16] for i in range(0, len(shared), 16)]
-    print("shared : ", shared[0])
 
     plaintext = str.encode(message['data'])
     ciphertext = encrypt(plaintext, shared[0])
-    print(ciphertext)
-    asd = bytesToChar(ciphertext)
-    bcd = charToBytes(asd)
-    print(bcd)
+    byte_ciphertext = bytesToChar(ciphertext)
 
-    emit('send_cipher_text',  {'ciphertext': asd})
-
-@socketio.on('get_cipher_text')
-def get_cipher_text(message):
-    sum_shared_key = shared_key['shared_key0'] + shared_key['shared_key1']
-    sum_shared_key = str(sum_shared_key)
-    chunks = len(sum_shared_key)
-    chunks, chunk_size = len(sum_shared_key), 16
-    sum_shared_key = [sum_shared_key[i:i+chunk_size] for i in range(0, chunks, chunk_size)]
-    print(sum_shared_key)
-    shared = 0
-    for i in range(len(sum_shared_key)):
-        shared += int(sum_shared_key[i])
-    print("Kunci bersama +: ", (shared_key['shared_key0'] + shared_key['shared_key1']))
-    print("shared : ", shared)
-    shared = str(shared)
-    shared = [shared[i:i+16] for i in range(0, len(shared), 16)]
-    print("shared : ", shared[0])
-    
-    bcd = charToBytes(message['ciphertext'])
-    ghj = decrypt(message['ciphertext'], shared[0])
-    print(ghj)
+    emit('send_cipher_text',  {'ciphertext': byte_ciphertext})
 
 # Notice how socketio.run takes care of app instantiation as well.
 if __name__ == '__main__':

@@ -10,6 +10,8 @@ G = (602046282375688656758213480587526111916698976636884684818,
 def get_global():
     return G
 
+def get_p():
+    return p
 
 # Fungsi untuk operasi modulus
 def modinv(a, p):
@@ -204,41 +206,6 @@ def progressbar(current_value,total_value,bar_lengh):
     loadbar = "Progress: {}%".format(percentage)
     print(loadbar) 
 
-def ECB(blocks, keys, IV):
-    print('mode ECB')
-    # encrypt each block
-    lo = 1
-    for k in keys:
-        for i in range(len(blocks)):
-            blocks[i] = (int.from_bytes(blocks[i],byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-            
-            blocks[i] = S1Process(blocks[i])
-            blocks[i] = r4Shift(blocks[i])
-            blocks[i] = P1Process(blocks[i])
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-
-    return blocks
-
-def ECB_decrypt(blocks, keys, IV):
-    print('mode ECB')
-    resultingBlock = blocks.copy()
-    # encrypt each block
-    lo = 1
-    for k in keys:
-        for i in range(len(resultingBlock)):
-            resultingBlock[i] = P1Process_reverse(blocks[i])
-            resultingBlock[i] = r4Shift_reverse(resultingBlock[i])
-            resultingBlock[i] = S1Process_reverse(resultingBlock[i])
-            
-            resultingBlock[i] = (int.from_bytes(resultingBlock[i],byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-
-        blocks = resultingBlock.copy()
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-    
-    return resultingBlock
-
 def CBC(blocks, keys, IV):
     print('mode CBC')
     # encrypt each block
@@ -281,123 +248,6 @@ def CBC_decrypt(blocks, keys, IV):
         lo = lo + 1
     
     return resultingBlock
-
-def CFB(blocks, keys, IV):
-    print('mode CFB')
-    lo = 1
-    for k in keys:
-        for i in range(len(blocks)):
-            if i == 0:
-                block = IV
-            else:
-                block = blocks[i-1]
-
-            block = (int.from_bytes(block,byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-            block = S1Process(block)
-            block = r4Shift(block)
-            block = P1Process(block)
-            block = (int.from_bytes(blocks[i],byteorder="big") ^ int.from_bytes(block,byteorder="big")).to_bytes(16,byteorder="big")
-
-            blocks[i] = block
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-
-    return blocks
-
-def CFB_decrypt(blocks, keys, IV):
-    print('mode CFB')
-    lo = 1
-    resultingBlock = blocks.copy()
-    for k in keys:
-        for i in range(len(resultingBlock)):
-            if i == 0:
-                block = IV
-            else:
-                block = blocks[i-1]
-
-            block = (int.from_bytes(block,byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-            block = S1Process(block)
-            block = r4Shift(block)
-            block = P1Process(block)
-            block = (int.from_bytes(resultingBlock[i],byteorder="big") ^ int.from_bytes(block,byteorder="big")).to_bytes(16,byteorder="big")
-
-            resultingBlock[i] = block
-        blocks = resultingBlock.copy()
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-
-    return blocks
-
-def OFB(blocks, keys, IV):
-    print('mode OFB')
-    lo = 1
-    for k in keys:
-        temp = IV
-        for i in range(len(blocks)):
-            if i == 0:
-                block = IV
-            else:
-                block = temp
-
-            block = (int.from_bytes(block,byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-            block = S1Process(block)
-            block = r4Shift(block)
-            block = P1Process(block)
-            temp = block
-            block = (int.from_bytes(blocks[i],byteorder="big") ^ int.from_bytes(block,byteorder="big")).to_bytes(16,byteorder="big")
-
-            blocks[i] = block
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-
-    return blocks
-
-def OFB_decrypt(blocks, keys, IV):
-    print('mode OFB')
-    lo = 1
-    resultingBlock = blocks.copy()
-    for k in keys:
-        temp = IV
-        for i in range(len(resultingBlock)):
-            if i == 0:
-                block = IV
-            else:
-                block = temp
-
-            block = (int.from_bytes(block,byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-            block = S1Process(block)
-            block = r4Shift(block)
-            block = P1Process(block)
-            temp = block
-            block = (int.from_bytes(resultingBlock[i],byteorder="big") ^ int.from_bytes(block,byteorder="big")).to_bytes(16,byteorder="big")
-
-            resultingBlock[i] = block
-        blocks = resultingBlock.copy()
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-
-    return blocks
-
-def counter(blocks, keys):
-    print('mode CTR')
-    lo = 1
-    count = 1
-    for k in keys:
-        for i in range(len(blocks)):
-            counter = bytes(count)
-            counter = counter + bytes(16 - len(counter) % 16)
-            vector = S1Process(counter)
-            vector = r4Shift(vector)
-            vector = P1Process(vector)
-            vector = (int.from_bytes(vector,byteorder="big") ^ int.from_bytes(k,byteorder="big")).to_bytes(16,byteorder="big")
-            blocks[i] = (int.from_bytes(blocks[i],byteorder="big") ^ int.from_bytes(vector,byteorder="big")).to_bytes(16,byteorder="big")
-        count += 1
-        progressbar(lo, 11, 11)
-        lo = lo + 1
-
-    return blocks
-
-def counter_decrypt(blocks, keys, num_rounds=16):
     print('mode CTR')
     lo = 1
     resultingBlock = blocks.copy()
