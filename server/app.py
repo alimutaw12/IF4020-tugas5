@@ -27,7 +27,6 @@ def test_connect():
     file = open(f'{filename}', 'rb')
     key = file.read()
     global_keys = json.loads(bytesToChar(key))
-    print(global_keys)
 
     emit('after connect',  {
         'data':'Lets dance 22',

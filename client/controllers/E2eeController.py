@@ -24,10 +24,10 @@ def index():
     # print(key_json)
 
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
     mycursor = mydb.cursor()
     sql = "SELECT * FROM chats WHERE port ='"+port+"'"
@@ -52,10 +52,10 @@ def store():
     # print(encrypted_string)
 
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
 
     mycursor = mydb.cursor()
@@ -85,10 +85,10 @@ def read(chat_id):
     key_json = json.loads(bytesToChar(key))
 
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
 
     mycursor = mydb.cursor()
@@ -100,10 +100,10 @@ def read(chat_id):
 
 def readDecrypted(chat_id):
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
 
     mycursor = mydb.cursor()

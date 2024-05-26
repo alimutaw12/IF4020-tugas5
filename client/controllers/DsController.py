@@ -8,10 +8,10 @@ from cipher.ds import *
 def index():
     port = request.host.split(':')[1] if ':' in request.host else '80'
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
     mycursor = mydb.cursor()
     sql = "SELECT * FROM documents WHERE port ='"+port+"'"
@@ -62,10 +62,10 @@ def store():
         e, y = sign_message(s, message, a, p, q)
 
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
 
     mycursor = mydb.cursor()
@@ -80,10 +80,10 @@ def store():
 
 def read(document_id):
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
 
     mycursor = mydb.cursor()
@@ -105,10 +105,10 @@ def verify(document_id):
     global_keys = json.loads(bytesToChar(key))
 
     mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="crypto"
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_DATABASE')
     )
 
     mycursor = mydb.cursor()
