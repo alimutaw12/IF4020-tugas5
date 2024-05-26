@@ -43,8 +43,7 @@ def store():
         key = file.read()
         global_keys = json.loads(bytesToChar(key))
 
-        port = request.host.split(':')[1] if ':' in request.host else '80'
-        filename = 'dskey'+ port +'.txt'
+        filename = 'dskey-pub'+ sender +'.txt'
 
         fileexist = os.path.isfile(filename)
         if not fileexist:
@@ -54,7 +53,7 @@ def store():
         key = file.read()
         ds_key = json.loads(bytesToChar(key))
 
-        s = ds_key[0]
+        s = ds_key
         a = global_keys['a']
         p = global_keys['p']
         q = global_keys['q']

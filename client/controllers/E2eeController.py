@@ -8,20 +8,31 @@ import json
 
 def index():
     port = request.host.split(':')[1] if ':' in request.host else '80'
-    filename = 'e2eekey-' + port + '.txt'
+    filename = 'e2eekey-pri' + port + '.txt'
+    filenamePub = 'e2eekey-pub' + port + '.txt'
     fileexist = os.path.isfile(filename)
     if not fileexist:
         key = generate_e2ee_key()
-        # print(key)
-        key_string = json.dumps(key)
+        key_string = json.dumps(key['private_key'])
         # print(key_string)
         file = open(f'{filename}', 'wb')
         file.write(charToBytes(key_string))
+
+        key_string = json.dumps(key['public_key'])
+        file = open(f'{filenamePub}', 'wb')
+        file.write(charToBytes(key_string))
         
     file = open(f'{filename}', 'rb')
-    key = file.read()
-    key_json = json.loads(bytesToChar(key))
-    # print(key_json)
+    private_key = file.read()
+    private_json = json.loads(bytesToChar(private_key))
+
+    file = open(f'{filenamePub}', 'rb')
+    public_key = file.read()
+    public_json = json.loads(bytesToChar(public_key))
+    key_json = {
+        'private_key' : private_json,
+        'public_key': public_json
+    }
 
     mydb = mysql.connector.connect(
         host=os.getenv('DB_HOST'),
@@ -70,19 +81,31 @@ def store():
 
 def read(chat_id):
     port = request.host.split(':')[1] if ':' in request.host else '80'
-    filename = 'e2eekey-' + port + '.txt'
+    filename = 'e2eekey-pri' + port + '.txt'
+    filenamePub = 'e2eekey-pub' + port + '.txt'
     fileexist = os.path.isfile(filename)
     if not fileexist:
         key = generate_e2ee_key()
-        # print(key)
-        key_string = json.dumps(key)
+        key_string = json.dumps(key['private_key'])
         # print(key_string)
         file = open(f'{filename}', 'wb')
         file.write(charToBytes(key_string))
+
+        key_string = json.dumps(key['public_key'])
+        file = open(f'{filenamePub}', 'wb')
+        file.write(charToBytes(key_string))
         
     file = open(f'{filename}', 'rb')
-    key = file.read()
-    key_json = json.loads(bytesToChar(key))
+    private_key = file.read()
+    private_json = json.loads(bytesToChar(private_key))
+
+    file = open(f'{filenamePub}', 'rb')
+    public_key = file.read()
+    public_json = json.loads(bytesToChar(public_key))
+    key_json = {
+        'private_key' : private_json,
+        'public_key': public_json
+    }
 
     mydb = mysql.connector.connect(
         host=os.getenv('DB_HOST'),

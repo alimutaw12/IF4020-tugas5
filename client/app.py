@@ -50,13 +50,18 @@ def generate_ds_key(message):
     global_keys = json.loads(bytesToChar(key))
 
     port = request.host.split(':')[1] if ':' in request.host else '80'
-    filename = 'dskey'+ port +'.txt'
+    filename = 'dskey-pub'+ port +'.txt'
 
     fileexist = os.path.isfile(filename)
     if not fileexist:
         key = generate_ds_keys(global_keys['a'], global_keys['p'], global_keys['q'])
-        key_string = json.dumps(key)
+        key_string = json.dumps(key[0])
         file = open(f'{filename}', 'wb')
+        file.write(charToBytes(key_string))
+
+        filenamePri = 'dskey-pri'+ port +'.txt'
+        key_string = json.dumps(key[1])
+        file = open(f'{filenamePri}', 'wb')
         file.write(charToBytes(key_string))
         
     file = open(f'{filename}', 'rb')
